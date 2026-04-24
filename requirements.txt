@@ -1,4 +1,6 @@
-streamlit
 tensorflow
+streamlit
 opencv-python
+Pillow
 numpy
+huggingface_hub
