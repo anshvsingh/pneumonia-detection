@@ -1,30 +1,152 @@
-# Pneumonia Detection using Chest X-ray Images
+---
+license: mit
+tags:
+  - image-classification
+  - medical-imaging
+  - pneumonia-detection
+  - deep-learning
+  - tensorflow
+  - resnet
+  - chest-xray
+pipeline_tag: image-classification
+---
 
-Pneumonia is an inflammatory condition primarily affecting the lungs, characterized by symptoms such as cough, chest pain, fever, and difficulty breathing. The goal of this project is to develop an automated system for detecting and classifying pneumonia in medical images.
+# 🫁 Pneumonia Detection from Chest X-Ray Images
 
-![Symptoms of Pneumonia](https://user-images.githubusercontent.com/65142149/215302250-841fde71-e182-4ffd-8036-625a3a717de7.png)
+This model detects **pneumonia** in chest X-ray images using transfer learning with a **ResNet architecture**, trained on the Kaggle Chest X-Ray Images (Pneumonia) dataset.
 
-## Motivation
-The motivation behind this project is to leverage artificial intelligence to accurately detect and classify pneumonia in humans using chest X-ray images. By automating the diagnosis process, it can aid healthcare professionals in providing timely and accurate treatment.
+> ⚠️ **Disclaimer:** This model is intended for **educational and research purposes only**. It is **not** a substitute for professional medical diagnosis. Always consult a qualified healthcare professional.
 
-## Approach
-Transfer learning techniques were employed to build an artificial intelligence system capable of pneumonia detection. The system utilizes ResNet architectures and was implemented using Python and TensorFlow. Google Colab GPU and TensorBoard were utilized for efficient training and evaluation of the models.
+---
 
-## Key Technologies Used
-- Python
-- TensorFlow
-- Google Colab GPU
-- TensorBoard
-- ResNet architectures
+## 📌 Model Summary
 
-## The Dataset
-The dataset used in this project is organized into three folders: train, test, and val. It consists of X-ray images (JPEG) categorized into two classes: Pneumonia and Normal. The dataset contains a total of 5,863 images.
+| Property        | Details                              |
+|----------------|--------------------------------------|
+| **Task**        | Binary Image Classification          |
+| **Classes**     | `Normal`, `Pneumonia`                |
+| **Architecture**| ResNet (Transfer Learning)           |
+| **Framework**   | TensorFlow / Keras                   |
+| **Input Size**  | 180 × 180 × 3 (RGB)                  |
+| **Output**      | Softmax probability over 2 classes   |
+| **Model File**  | `xray_model.hdf5`                    |
 
-Chest X-ray images (anterior-posterior) were obtained from pediatric patients between the ages of one to five years old. These images were sourced from the Guangzhou Women and Children’s Medical Center in Guangzhou. Prior to training the AI system, all chest radiographs underwent quality control screening to remove low-quality or unreadable scans. Expert physicians then graded the images for diagnosis, with a third expert reviewing the evaluation set to account for any grading errors.
+---
 
-The dataset used in this project is available on Kaggle: [Chest X-Ray Images (Pneumonia)](https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia)
+## 📂 Dataset
 
-## Achievement
-The developed system successfully distinguished between bacterial and viral pneumonia on chest X-ray images. It serves as a prototype for potential application in the field of biomedical imaging, providing a valuable tool for diagnosing pneumonia accurately and efficiently.
+The model was trained on the **Chest X-Ray Images (Pneumonia)** dataset available on Kaggle.
 
-**Credit:** Kermany, Daniel; Zhang, Kang; Goldbaum, Michael (2018), "Labeled Optical Coherence Tomography (OCT) and Chest X-Ray Images for Classification", Mendeley Data, V2, doi: 10.17632/rscbjbr9sj.2
+- **Source:** [Kaggle - Chest X-Ray Images (Pneumonia)](https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia)
+- **Total Images:** 5,863 JPEG chest X-rays
+- **Classes:** Normal, Pneumonia (Bacterial + Viral)
+- **Split:**
+  - Train: 5,216 images
+  - Validation: 16 images
+  - Test: 624 images
+- **Patient Demographics:** Pediatric patients aged 1–5 years from Guangzhou Women and Children's Medical Center, Guangzhou
+
+**Citation:**
+> Kermany, Daniel; Zhang, Kang; Goldbaum, Michael (2018),
+> *"Labeled Optical Coherence Tomography (OCT) and Chest X-Ray Images for Classification"*,
+> Mendeley Data, V2, doi: [10.17632/rscbjbr9sj.2](https://doi.org/10.17632/rscbjbr9sj.2)
+
+---
+
+## 📊 Metrics
+
+| Metric        | Score   |
+|--------------|---------|
+| **Accuracy**  | 91.50%  |
+| **Precision** | 91.00%  |
+| **Recall**    | 92.00%  |
+| **F1 Score**  | 91.00%  |
+
+> 💡 For medical imaging tasks, **Recall (Sensitivity)** is the most critical metric — a missed pneumonia case (false negative) is more dangerous than a false alarm.
+
+---
+
+## 🚀 How to Load & Use the Model
+
+### Install dependencies
+
+```bash
+pip install tensorflow huggingface_hub pillow opencv-python numpy
+```
+
+### Load the model
+
+```python
+import tensorflow as tf
+from huggingface_hub import hf_hub_download
+
+model_path = hf_hub_download(
+    repo_id="anshvsingh/pneumonia-detection",
+    filename="xray_model.hdf5"
+)
+model = tf.keras.models.load_model(model_path)
+```
+
+### Run a prediction
+
+```python
+import numpy as np
+import cv2
+from PIL import Image, ImageOps
+
+class_names = ["Normal", "Pneumonia"]
+
+def predict(image_path):
+    image = Image.open(image_path).convert("RGB")
+    image = ImageOps.fit(image, (180, 180), Image.LANCZOS)
+    image = np.asarray(image)
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    image = image[np.newaxis, ...]
+
+    predictions = model.predict(image)
+    score = tf.nn.softmax(predictions[0])
+
+    print("Prediction : {}".format(class_names[np.argmax(score)]))
+    print("Confidence : {:.2f}%".format(100 * np.max(score)))
+
+predict("chest_xray.jpeg")
+```
+
+---
+
+## 🌐 Web Application
+
+A live Streamlit web app is available for easy inference without writing any code.
+
+👉 **GitHub Repository:** [anshvsingh/pneumonia-detection](https://github.com/anshvsingh/pneumonia-detection)
+
+```bash
+# Run locally
+git clone https://github.com/anshvsingh/pneumonia-detection
+cd pneumonia-detection
+pip install -r requirements.txt
+streamlit run xray_web.py
+```
+
+---
+
+## 🔬 Approach
+
+- **Transfer Learning** was applied using a pre-trained **ResNet** architecture
+- The model was fine-tuned on chest X-ray images for binary classification
+- Training was done on **Google Colab** using GPU acceleration
+- **TensorBoard** was used to monitor training and evaluation metrics
+
+---
+
+## 👤 Author
+
+**Ansh V Singh**
+- GitHub: [@anshvsingh](https://github.com/anshvsingh)
+- Hugging Face: [@anshvsingh](https://huggingface.co/anshvsingh)
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — feel free to use and build upon it with attribution.
