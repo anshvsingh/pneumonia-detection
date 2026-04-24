@@ -13,6 +13,13 @@ pipeline_tag: image-classification
 
 # 🫁 Pneumonia Detection from Chest X-Ray Images
 
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![Pipeline: Image Classification](https://img.shields.io/badge/Pipeline-Image%20Classification-blue)
+![Framework: TensorFlow](https://img.shields.io/badge/Framework-TensorFlow-orange?logo=tensorflow)
+![Architecture: ResNet](https://img.shields.io/badge/Architecture-ResNet-purple)
+![Domain: Medical Imaging](https://img.shields.io/badge/Domain-Medical%20Imaging-red)
+![Tag: Pneumonia Detection](https://img.shields.io/badge/Tag-Pneumonia%20Detection-lightgrey)
+
 This model detects **pneumonia** in chest X-ray images using transfer learning with a **ResNet architecture**, trained on the Kaggle Chest X-Ray Images (Pneumonia) dataset.
 
 > ⚠️ **Disclaimer:** This model is intended for **educational and research purposes only**. It is **not** a substitute for professional medical diagnosis. Always consult a qualified healthcare professional.
